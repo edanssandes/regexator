@@ -1,0 +1,132 @@
+body {
+	font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+}
+.enunciado {
+	width:100%; 
+	height: 100px;
+	font-size:18pt; 
+	height: 40px;
+}
+.input {
+	width:100%; 
+	font-size:20pt; 
+	height: 40px;
+	background-color: rgba(255,255,255,0.9);
+	border: 1px solid gray; 
+	margin-bottom:40px; 
+}
+::placeholder {
+  color: #D0D0D0;
+  font-style: oblique;
+  font-weight: lighter;
+  font-stretch: extra-condensed;
+}
+.resultado_out {
+	font-size:14pt; 
+	background-color: rgba(255,255,255,0.4);
+	border: 1px solid #D0D0D0; 
+	border-style: none solid solid solid;
+	font-family: "Comic Sans MS", cursive, sans-serif;
+}
+.even {
+	border-top: 1px solid #D0D0D0;
+	background-color: rgba(200,200,200,0.2);
+}
+.odd {
+	border-top: 1px solid #D0D0D0;
+	background-color: rgba(255,255,255,0.2);
+}
+.resultado {
+	padding: 10px;
+}
+
+.correto {
+	background-color: rgba(160,255,160,0.5);
+}
+.incorreto {
+	background-color: rgba(255,240,240,0);
+}
+
+@-webkit-keyframes outline-blinker {
+  from { outline-color: rgba(255,128,128,1); }
+  to { outline-color: rgba(128,128,0,0); }
+}
+
+@-webkit-keyframes blinker {
+  from { opacity: 1.0; }
+  to { opacity: 0.3; }
+}
+@keyframes pulse {
+  0% {background-color: rgba(250,230,0,1); }
+  100% {background-color: rgba(255,0,0,0); outline-color: rgba(128,128,0,0);}
+}
+.mark00 {
+}
+.mark10 {
+  background-color: yellow;
+  outline: 1px solid gray; 
+  -webkit-animation-name: pulse;
+  -webkit-animation-iteration-count: infinite;
+  -webkit-animation-timing-function: ease-in-out;
+  -webkit-animation-direction: alternate;
+  -webkit-animation-duration: 0.7s;
+}
+.mark01 {
+  color: red;
+  font-weight: bold;
+  -webkit-animation-name: blinker;
+  -webkit-animation-iteration-count: infinite;
+  -webkit-animation-timing-function: ease-in-out;
+  -webkit-animation-direction: alternate;
+  -webkit-animation-duration: 0.7s;
+}
+
+.mark11 {
+  background-color: yellow;
+  outline: 1px solid rgb(128,128,0); 
+  font-weight: bold;
+}
+
+.mark11b {
+  background-color: yellow;
+  outline: 1px solid; 
+  font-weight: bold;
+  -webkit-animation-name: outline-blinker;
+  -webkit-animation-iteration-count: infinite;
+  -webkit-animation-timing-function: ease-in-out;
+  -webkit-animation-direction: alternate;
+  -webkit-animation-duration: 0.7s;
+}
+
+kbd {
+    background-color:#fdfdfd;
+    border:1px solid #cccccc;
+    border-radius:1px;
+    color:#333;
+    font-family:Arial,Helvetica,sans-serif;
+    margin:.1em .1em;
+}
+
+
+.center {
+  display: table-cell;
+  width: 100%;
+  max-width: 800px;
+}
+
+.sidebar {
+  font-size:10pt; 
+  width: 230px;
+  display: table-cell;
+}
+
+.sidebar_panel {
+  font-size:10pt; 
+  border: 1px solid green;
+  border-radius:3px;
+  padding:5px;
+  margin:5px;
+  width: 200px;
+  background-color: rgba(240,250,240,0.75);
+}
+
