@@ -6,6 +6,8 @@
 var questoes = [];
 var id_questao_atual = -1;
 var questao_atual = {};
+var respondido = false;
+var peso = 0;
 
 var d = 0;
 var nome = "";
@@ -196,6 +198,8 @@ function corrigir(pattern) {
 function carregar_questao(id_questao) {
 	if (id_questao < 0) {
 		document.getElementById('center').style.visibility = "hidden";
+		tempo_restante = 60*5;
+		atualizar_status();
 		return;
 	} else {
 		document.getElementById('center').style.visibility = "visible";
@@ -327,6 +331,7 @@ function inicializar() {
 		select.options[i+1] = new Option('Questão ' + (i+1), i);
 	}
 
+	stopTimer();
 	atualizar_pontos_acumulados();
 	carregar_questao(-1);
 	//document.documentElement.requestFullscreen();
