@@ -2,13 +2,17 @@
  <head>
   <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
   <title>Expressões Regulares</title>
-  <link rel="stylesheet" href="css/styles.css">
   <script type="text/javascript" src="js/questoes.js"></script>
   <script type="text/javascript" src="js/corretor.js"></script>
+  <link rel="stylesheet" href="css/styles.css">
  </head>
- <body onload="inicializar();" background="img/bkg.jpg">
-  <div style="display: table; margin: auto;">
-  <div class="sidebar">
+
+<body onload="inicializar();" background="img/bkg.jpg">
+ <div class="header">
+  <div style="text-align: center;; font-size:40; color:#E0E0E0"><span>RegeXator</span></div>
+ </div>
+ <div class="main">
+  <div class="left">
    <div class="sidebar_panel">
     <div>Nome: <span id="nome">-</span><span style="float:right;" onclick="deletar_jogo();"><img src="img/close.png"></span></div>
     <div>Pontos Acumulados: <span id="pt_total">-</span></div>
@@ -17,17 +21,26 @@
     </div>
    </div>
    <div class="sidebar_panel" style="font-size:18px;">
-    <div>Tempo: <span id="time">-:--</span></div>
+    <div>
+      Tempo: <span id="time">-:-</span>
+      <span id="bt_desistir" style="float:right; visibility: hidden;" onclick="desistir_questao();"><img src="img/close.png"></span>
+    </div>
     <div>Erros: <span id="erros">-</span></div>
     <div>Pontos: <span id="pontos">0</span></div>
     <div>Peso: &times;<span id="peso">0</span> </div>
    </div>
   </div>
-  <div class="center" id="center" hidden>
-   <div class="enunciado" id="enunciado"></div>
+  <div class="middle">
+   <div id="center" style="visibility: hidden;">
+   <div class="enunciado"><span id="enunciado"></span></div>
    <input id="regex" name="regex" tabindex="-1" type="x" class="input" placeholder="Escreva a Expressão Regular" autocomplete="off" onkeypress="return entsub(this.form);">
    <div class="resultado_out" id="resultado">
    </div>
+   </div>
   </div>
- </body>
+ </div>
+ <div class="footer">
+  <div style="text-align: right; font-size:10; color:#E0E0E0">Desenvolvido por Edans Sandes (2018)</div>
+ </div>
+</body>
 </html>

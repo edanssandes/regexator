@@ -7,6 +7,7 @@ var questoes = [];
 var id_questao_atual = -1;
 var questao_atual = {};
 
+var d = 0;
 var nome = "";
 var historicos = {};
 var pontos = null;
@@ -36,18 +37,24 @@ function processar_expressao(expressao, texto) {
 	if (expressao == "") {
 		return null;
 	}
-	var re = new RegExp(expressao, 'gu');
-	var pos = new Array();
-	while (match = re.exec(texto)) {
-		if (match.index === re.lastIndex) {
-			re.lastIndex++;
-			continue;
+	try {
+		var re = new RegExp(expressao, 'gu');
+		var pos = new Array();
+		while (match = re.exec(texto)) {
+			if (match.index === re.lastIndex) {
+				re.lastIndex++;
+				continue;
+			}
+			//console.log("Teste:", match);
+			i0 = match.index;
+			i1 = match.index + match[0].length;
+			pos.push([i0, i1]);
+			if (pos.length>1000) break;
 		}
-		//console.log("Teste:", match);
-		i0 = match.index;
-		i1 = match.index + match[0].length;
-		pos.push([i0, i1]);
-		if (pos.length>1000) break;
+	} catch(error) {
+		document.getElementById('regex').style.color = "red"; 
+		console.error(error);
+		return null;
 	}
     	return pos;
 }
@@ -84,6 +91,12 @@ function corrigir_linhas(id, pattern, texto, resposta) {
 		};
 	}
 	pos = processar_expressao(pattern, linhas[id])
+	if (pos == null) {
+		return {
+			'selecoes': [],
+			'correto': false,
+		};
+	}
 
 	states = new Array()
         var s = JSON.stringify(pos);
@@ -167,7 +180,7 @@ function corrigir(pattern) {
 			atualizar_status();
 			audio_wrong.play();
 		} else {
-			pontos = Math.max(0, Math.floor(tempo_restante/10) - erros);
+			pontos = Math.floor(Math.max(0, Math.floor(tempo_restante/10) - erros) + 10);
 			salvar_historico(pattern)
 			respondido = true;
 			audio_correct.play();
@@ -220,13 +233,21 @@ function carregar_questao(id_questao) {
 			questao_atual['respostas'].push([]);
 		}
 	}
+	num_matches = []
+	for (i=0; i<questao_atual['respostas'].length; i++) {
+		n = questao_atual['respostas'][i].length;
+		num_matches.push([i, n==0 ? 9999:n]);
+	}
+	var sorted = num_matches.slice().sort(function(a,b){return a[1]-b[1]});
+	var ranks = sorted.slice().map(function(v){ return v[0] });
+	console.log(num_matches, sorted, ranks);
 	
 	document.getElementById('enunciado').innerHTML = questao_atual['enunciado'];
 	divs = ""
 	linhas = questao_atual['linhas'];
 	for (i=0; i<linhas.length; i++) {
 		par = (i%2==0)?"even":"odd";
-		divs += '<div class="'+ par +'"><div id="resultado' + i + '" class="resultado"></div></div>';
+		divs += '<div class="'+ par +'"><div id="resultado' + ranks[i] + '" class="resultado"></div></div>';
 	}
 	document.getElementById('resultado').innerHTML = divs;
 
@@ -246,7 +267,7 @@ function carregar_questao(id_questao) {
 }
 
 function deletar_jogo() {
-	var r = confirm("Clique em OK se desejar excluir esse jogo.\n Atenção: todo o histórico do jogo anterior será perdido.");
+	var r = confirm("Clique em OK se desejar excluir esse jogador.\n Atenção: todo o histórico do jogador anterior será perdido.");
 	if (r == false) {
 		return;
 	}
@@ -255,6 +276,16 @@ function deletar_jogo() {
 	localStorage.removeItem("oficina.regex.historicos");
 	inicializar();
 }
+
+function desistir_questao() {
+	var r = confirm("Clique em OK se desejar desistir desta questão.");
+	if (r == false) {
+		return;
+	}
+	tempo_restante = 0;
+}
+
+
 
 function inicializar() {
 	questoes = JSON.parse(questoes_json);
@@ -305,6 +336,7 @@ function putjson(obj) {
 }
 
 function entsub(myform) {
+	document.getElementById('regex').style.color = "black"; 
 	if (window.event && window.event.keyCode == 13) {
 		pattern = document.getElementById('regex').value;
 		corrigir(pattern);
@@ -336,7 +368,7 @@ function atualizar_status() {
 	} else {
 		div_tempo.style.color = 'black';
 	}
-	if (respondido) {
+	if (respondido && tempo_restante>0) {
 		div_tempo.style.color = 'green';
 	}
 	
@@ -378,7 +410,10 @@ function temporizador() {
 		audio_start.play();
 	}
 
-	tempo_restante -= 0.2; //*10;
+	d = (new Date()).getTime()
+	diff = d-d_prev;
+	d_prev = d;
+	tempo_restante -= diff/1000; //*10;
 
 	if (tempo_restante <= 0) {
 		tempo_restante = 0;
@@ -396,12 +431,15 @@ function temporizador() {
 function startTimer() {
 	stopTimer();
 	document.getElementById("select_questoes").disabled = true;
+	document.getElementById('bt_desistir').style.visibility = "visible";
+	d_prev = (new Date()).getTime()
 	timer = setInterval(temporizador, 200);
 }
 
 function stopTimer() {
 	time_started = false;
 	document.getElementById("select_questoes").disabled = false;
+	document.getElementById('bt_desistir').style.visibility = "hidden";
 	if (timer != null) {
 		clearInterval(timer);
 		timer = null;
