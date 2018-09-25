@@ -3,7 +3,7 @@
 
 //var resposta_json="[[4,5],[135,138],[139,142],[143,146],[147,150]]"
 
-var questoes = [];
+//var questoes = [];
 var id_questao_atual = -1;
 var questao_atual = {};
 var respondido = false;
@@ -73,6 +73,7 @@ function atualizar_pontos_acumulados() {
 
 function atualizar_resultado(id, r, resultado_ok) {
 	r = r.replace(/\n/g, "<br>");
+	r = r.replace(/\t/g, "<span style='color:gray'>&#x21E5;</span>");
 	div = document.getElementById('resultado' + id);
 	div.innerHTML = r;
 	if (resultado_ok == null) {
@@ -179,13 +180,14 @@ function corrigir(pattern) {
 	if (pattern != null && pattern != "" && !respondido && em_jogo) {
 		if (!tudo_correto) {
 			erros += 1;
-			erros = Math.min(erros, 12);
+			//erros = Math.min(erros, 12);
 			atualizar_status();
 			audio_wrong.play();
 		} else {
-			pontos = Math.floor(Math.max(0, Math.floor(tempo_restante/10) - erros) + 10);
+			pontos = 10 + Math.floor(Math.max(0, Math.floor(tempo_restante/15) - erros));
 			salvar_historico(pattern)
 			respondido = true;
+			em_jogo = false;
 			audio_correct.play();
 			stopTimer();
 			//document.getElementById("select_questoes").disabled = false;
@@ -200,9 +202,7 @@ function carregar_questao(id_questao) {
 		document.getElementById('center').style.visibility = "hidden";
 		tempo_restante = 60*5;
 		atualizar_status();
-		return;
-	} else {
-		document.getElementById('center').style.visibility = "visible";
+		return true;
 	}
 	if (id_questao in historicos) {
 		//window.alert("Essa questão já foi respondida!");
@@ -217,11 +217,13 @@ function carregar_questao(id_questao) {
 		pontos = 0;
 		erros = 0;
 	}
-	if (pattern == "" && questoes[id_questao].senha != "") {
-		var senha = window.prompt("Para desbloquear a questão nº" + id_questao + ", informe a senha informada na oficina.","");
-		if (senha != questoes[id_questao].senha) {
+	if (pattern == "" && questoes[id_questao].senha && senhas.length > id_questao) {
+		n_questao = parseInt(id_questao)+1;
+		var senha = window.prompt("Para desbloquear a questão nº" + n_questao + ", informe a senha informada na oficina.","");
+		if (senha != senhas[id_questao]) {
 			window.alert("Senha inválida");
-			return;
+			document.getElementById('select_questoes').selectedIndex = id_questao_atual+1;
+			return false;
 		}
 	}
 	id_questao_atual = id_questao;
@@ -247,6 +249,7 @@ function carregar_questao(id_questao) {
 	var ranks = sorted.slice().map(function(v){ return v[0] });
 	console.log(num_matches, sorted, ranks);
 	
+	document.getElementById('center').style.visibility = "visible";
 	document.getElementById('enunciado').innerHTML = questao_atual['enunciado'];
 	divs = ""
 	linhas = questao_atual['linhas'];
@@ -271,8 +274,8 @@ function carregar_questao(id_questao) {
 		em_jogo = true;
 		startTimer();
 	}
-	atualizar_status()
-
+	atualizar_status();
+	return true;
 }
 
 function deletar_jogo() {
@@ -294,10 +297,22 @@ function desistir_questao() {
 	tempo_restante = 0;
 }
 
+function proxima_questao() {
+	if (!em_jogo && document.getElementById('select_questoes').selectedIndex < document.getElementById('select_questoes').options.length-1) {
+		document.getElementById('select_questoes').selectedIndex++;
+		carregar_questao(document.getElementById('select_questoes').value);
+	}
+}
+function questao_anterior() {
+	if (!em_jogo && document.getElementById('select_questoes').selectedIndex > 0) {
+		document.getElementById('select_questoes').selectedIndex--;
+		carregar_questao(document.getElementById('select_questoes').value);
+	}
+}
 
 
 function inicializar() {
-	questoes = JSON.parse(questoes_json);
+	//questoes = JSON.parse(questoes_json);
 	
 	nome = localStorage.getItem("oficina.regex.nome");
 	historicos_json = localStorage.getItem("oficina.regex.historicos");
@@ -326,7 +341,7 @@ function inicializar() {
 	for (i = 0; i < length; i++) {
 		select.options[0] = null;
 	}
-	select.options[0] = new Option('', -1);
+	select.options[0] = new Option('( Questão )', -1);
 	for (i=0; i<questoes.length; i++) {
 		select.options[i+1] = new Option('Questão ' + (i+1), i);
 	}
@@ -442,6 +457,8 @@ function temporizador() {
 function startTimer() {
 	stopTimer();
 	document.getElementById("select_questoes").disabled = true;
+	document.getElementById("bt_next").disabled = true;
+	document.getElementById("bt_back").disabled = true;
 	document.getElementById('bt_desistir').style.visibility = "visible";
 	d_prev = (new Date()).getTime()
 	timer = setInterval(temporizador, 200);
@@ -450,6 +467,8 @@ function startTimer() {
 function stopTimer() {
 	time_started = false;
 	document.getElementById("select_questoes").disabled = false;
+	document.getElementById("bt_next").disabled = false;
+	document.getElementById("bt_back").disabled = false;
 	document.getElementById('bt_desistir').style.visibility = "hidden";
 	if (timer != null) {
 		clearInterval(timer);

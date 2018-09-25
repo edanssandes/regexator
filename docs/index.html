@@ -19,7 +19,9 @@
     <div>Nome: <span id="nome">-</span><span style="float:right;" onclick="deletar_jogo();"><img src="img/close.png"></span></div>
     <div>Pontos Acumulados: <span id="pt_total">-</span></div>
     <div>
-     Questão Nº <select id="select_questoes" onchange="carregar_questao(document.getElementById('select_questoes').value)"></select>
+     <button id="bt_back" onclick="questao_anterior();">&#x00ab;</button>
+     <select id="select_questoes" onchange="carregar_questao(document.getElementById('select_questoes').value)"></select>
+     <button id="bt_next" onclick="proxima_questao();">&#x00bb;</button>
     </div>
    </div>
    <div class="sidebar_panel" style="font-size:18px;">
