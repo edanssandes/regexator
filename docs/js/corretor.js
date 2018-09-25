@@ -324,6 +324,7 @@ function inicializar() {
 
 	atualizar_pontos_acumulados();
 	carregar_questao(-1);
+	document.documentElement.requestFullscreen();
 }
 
 

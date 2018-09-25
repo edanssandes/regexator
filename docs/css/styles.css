@@ -168,6 +168,7 @@ body {
   flex:1 1 300px;
   margin: 10px;
   max-width:1024px;
+  overflow: auto;
 }
 #logo-container {
     display: block;
