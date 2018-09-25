@@ -4,6 +4,7 @@ questoes_json = `
 	"enunciado": "Uma letra <kbd>a</kbd> minúscula",
 	"senha": "",
 	"peso": 0.1,
+	"tempo": 120,
 	"linhas": [
 		"a", "b", "c", "d", "A", "4"
 	],
@@ -16,6 +17,7 @@ questoes_json = `
 	"enunciado": "Duas letras <kbd>a</kbd>'s minúsculas",
 	"senha": "",
 	"peso": 0.1,
+	"tempo": 90,
 	"linhas": [
 		"a", "aa", "aaa", "aaaa", "a aa aaa aaaa"
 	],
@@ -26,6 +28,7 @@ questoes_json = `
 	"enunciado": "A palavra <kbd>do</kbd> seguida de um espaço em branco",
 	"senha": "",
 	"peso": 0.2,
+	"tempo": 90,
 	"linhas": [
 		"Olhos do mundo", 
 		"zelos do marido",
@@ -40,9 +43,68 @@ questoes_json = `
 	}
 ,
 	{
+	"enunciado": "Um ponto de interrogação",
+	"senha": "",
+	"peso": 0.2,
+	"tempo": 90,
+	"linhas": [
+		"Qual seu nome?", 
+		"Olá!",
+		"Bom dia!",
+		"¿Como Estas Hoy?",
+		"Nome: ????",
+		"***$++$***",
+		"*[teste]*",
+		"(teste)",
+		"0+3"
+	],
+	"resposta": "\\\\?" 
+	}
+,
+	{
+	"enunciado": "Uma letra <kbd>a</kbd> seguida de um ponto de exclamação",
+	"senha": "",
+	"peso": 0.2,
+	"tempo": 90,
+	"linhas": [
+		"Qual seu nome?", 
+		"!Teste",
+		"Bom dia!",
+		"¿Como Estas Hoy?",
+		"Nome: ????",
+		"***$++$***",
+		"*[teste]*",
+		"(teste)",
+		"0+3"
+	],
+	"resposta": "a!" 
+	}
+,
+	{
+	"enunciado": "A sequência de caracteres <kbd>*$+</kbd>",
+	"senha": "",
+	"peso": 0.2,
+	"tempo": 90,
+	"linhas": [
+		"Qual seu nome?", 
+		"!Teste",
+		"Bom dia!",
+		"¿Como Estas Hoy?",
+		"Nome: ????",
+		"***$++$***",
+		"*[teste]*",
+		"(teste)",
+		"0+3"
+	],
+	"resposta": "\\\\*\\\\$\\\\+" 
+	}
+,
+
+	{
 	"enunciado": "Uma letra <kbd>a</kbd> ou uma letra <kbd>b</kbd>",
 	"senha": "",
 	"peso": 0.2,
+	"tempo": 90,
 	"linhas": [
 		"a", "b", "c", "d", "A", "4"
 	],
@@ -54,6 +116,7 @@ questoes_json = `
 	"enunciado": "o dígito zero seguido de uma letra <kbd>a</kbd> ou <kbd>b</kbd> minúscula",
 	"senha": "",
 	"peso": 0.2,
+	"tempo": 90,
 	"linhas": [
 		"0a", "0b", "0c", "a0", "b0", "aa", "bb", "0aa0"
 	],

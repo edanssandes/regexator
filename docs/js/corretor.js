@@ -258,7 +258,11 @@ function carregar_questao(id_questao) {
 	atualizar_pontos_acumulados();
 
 	if (!respondido) {
-		tempo_restante = 60 * 5; // 5 minutos
+		if ('tempo' in questao_atual) {
+			tempo_restante = questao_atual['tempo'];
+		} else {
+			tempo_restante = 60 * 5; // 5 minutos
+		}
 		time_warning = false;
 		em_jogo = true;
 		startTimer();
@@ -325,7 +329,7 @@ function inicializar() {
 
 	atualizar_pontos_acumulados();
 	carregar_questao(-1);
-	document.documentElement.requestFullscreen();
+	//document.documentElement.requestFullscreen();
 }
 
 
@@ -361,7 +365,7 @@ function atualizar_status() {
 	if (tempo_restante<0) {
 		div_tempo.style.color = 'black';
 		div_tempo.textContent = "Esgotado!";
-	} else if (tempo_restante<60) {
+	} else if (tempo_restante<45) {
 		div_tempo.style.color = 'red';
 		if (!time_warning) {
 			time_warning = true;
