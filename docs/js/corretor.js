@@ -51,6 +51,7 @@ function processar_expressao(expressao, texto) {
 			pos.push([i0, i1]);
 			if (pos.length>1000) break;
 		}
+		document.getElementById('regex').style.color = "#404040"; 
 	} catch(error) {
 		document.getElementById('regex').style.color = "red"; 
 		console.error(error);
