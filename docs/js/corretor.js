@@ -1,17 +1,20 @@
-
 //var texto="At w3schools.com you will learn how to make a website. We offer free tutorials in all web development technologies.\nTeste de expressão 123 123 123 456";
 
-//var resposta_json="[[4,5],[135,138],[139,142],[143,146],[147,150]]"
+//http://jsfiddle.net/M6nuZ/
 
-//var questoes = [];
 var id_questao_atual = -1;
 var questao_atual = {};
 var respondido = false;
 var peso = 0;
 
+var sala = '15ub9g';
+var sala_jogadores = {};
+
 var d = 0;
 var nome = "";
+var json_uri = "";
 var historicos = {};
+var jogadores = {};
 var pontos = null;
 var tempo_restante = 300;
 var erros = 0;
@@ -31,9 +34,16 @@ var req = new XMLHttpRequest();
 
 req.onreadystatechange = () => {
   if (req.readyState == XMLHttpRequest.DONE) {
+    resp = JSON.parse(req.responseText);
     console.log(req.responseText);
+    if ("uri" in resp) {
+      json_uri = resp["uri"];
+    }
   }
 };
+
+
+
 
 function processar_expressao(expressao, texto) {
 	if (expressao == "") {
@@ -62,11 +72,17 @@ function processar_expressao(expressao, texto) {
     	return pos;
 }
 
-function atualizar_pontos_acumulados() {
+function calcular_pontos_acumulados(h) {
 	pontos_acumulados = 0;
-	for (var key in historicos) {
-		pontos_acumulados += historicos[key]['pontos']*questoes[key]['peso'];
+	for (var key in h) {
+		pontos_acumulados += h[key]['pontos']*questoes[key]['peso'];
 	}
+	return pontos_acumulados;
+}
+
+
+function atualizar_pontos_acumulados() {
+	pontos_acumulados = calcular_pontos_acumulados(historicos);
 	document.getElementById('pt_total').textContent = Math.round(pontos_acumulados);
 }
 
@@ -285,6 +301,7 @@ function deletar_jogo() {
 	}
 
 	localStorage.removeItem("oficina.regex.nome");
+	localStorage.removeItem("oficina.regex.json_id");
 	localStorage.removeItem("oficina.regex.historicos");
 	inicializar();
 }
@@ -315,6 +332,7 @@ function inicializar() {
 	//questoes = JSON.parse(questoes_json);
 	
 	nome = localStorage.getItem("oficina.regex.nome");
+	json_uri = localStorage.getItem("oficina.regex.json_uri");
 	historicos_json = localStorage.getItem("oficina.regex.historicos");
 	historicos = JSON.parse(historicos_json);	
 
@@ -346,10 +364,67 @@ function inicializar() {
 		select.options[i+1] = new Option('Questão ' + (i+1), i);
 	}
 
+	check_cadastro();
+	startTimerJogadores();
+
 	stopTimer();
 	atualizar_pontos_acumulados();
 	carregar_questao(-1);
 	//document.documentElement.requestFullscreen();
+}
+
+function handler_sala() {
+  if(this.status == 200) {
+	console.log("SALA", this.responseText);
+	resp = JSON.parse(this.responseText)
+	if (!(nome in resp)) {
+		resp[nome] = json_uri;
+		sala_jogadores = resp;
+		s = JSON.stringify(resp);
+		console.log(s);
+		var sala_uri = 'https://api.myjson.com/bins/' + sala;
+		req.open("PUT", sala_uri, true);
+		req.setRequestHeader("Content-type", "application/json; charset=utf-8");
+		req.send(s);
+	}
+  } else {
+	console.log(this.status);
+  }
+}
+
+function check_sala() {
+	if (json_uri == null || json_uri == "") {
+		return;
+	}
+	try {
+		var request = new XMLHttpRequest();
+		var sala_uri = 'https://api.myjson.com/bins/' + sala;
+		request.onload = handler_sala;
+		request.open('GET', sala_uri);  // `false` makes the request synchronous
+		request.send();
+	} catch(error) {
+		console.error(error);
+	}
+}
+
+function check_cadastro() {
+	try {
+		//obj = {'nome': nome, 'json_uri': json_uri, "historicos": historicos};
+		obj = {'nome': nome, "historicos": historicos};
+		s = JSON.stringify(obj);
+		console.log(s);
+		console.log(json_uri);
+		if (json_uri == "" || json_uri == null) {
+			req.open("POST", "https://api.myjson.com/bins", true);
+		} else {
+			req.open("PUT", json_uri, true);
+		}
+		req.setRequestHeader("Content-type", "application/json; charset=utf-8");
+		req.send(s);
+		check_sala();
+	} catch(error) {
+		console.error(error);
+	}
 }
 
 
@@ -425,6 +500,8 @@ function salvar_historico(pattern) {
 		'tempo': tempo_restante,
 	}
 	localStorage.setItem("oficina.regex.historicos", JSON.stringify(historicos));
+	//localStorage.setItem("oficina.regex.json_uri", json_uri);
+	check_cadastro();
 	atualizar_pontos_acumulados();
 }
 
@@ -476,4 +553,35 @@ function stopTimer() {
 	}
 	atualizar_status()
 }
+
+
+
+function handler_jogador() {
+  if(this.status == 200) {
+	console.log("JOGADOR", this.responseText);
+	resp = JSON.parse(this.responseText)
+	jogador[resp['nome']] = resp['historico'];
+  } else {
+	console.log(this.status);
+  }
+}
+
+function temporizador_jogadores() {
+	console.log("TESTE");
+	var request = new XMLHttpRequest();
+	request.onload = handler_jogador;
+	for (var key in sala_jogadores) {
+		if (key != nome) {
+			var jogador_uri = sala_jogadores[key];
+			request.open('GET', jogador_uri);  // `false` makes the request synchronous
+			request.send();
+		}
+	}
+}
+
+function startTimerJogadores() {
+	timer_jogadores = setInterval(temporizador_jogadores, 10000);
+}
+
+
 
