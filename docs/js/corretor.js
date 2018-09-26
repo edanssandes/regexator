@@ -388,6 +388,8 @@ function handler_sala() {
 		req.open("PUT", sala_uri, true);
 		req.setRequestHeader("Content-type", "application/json; charset=utf-8");
 		req.send(s);
+		sala_jogadores = resp;
+		temporizador_jogadores();
 	}
 	sala_jogadores = resp;
   } else {
@@ -572,14 +574,18 @@ function atualizar_div_jogadores() {
 	}
 	lista.sort(function(a,b) {return b[1]-a[1];});
 	for (i=0; i<lista.length; i++) {
+		t = lista[i][2];
 		if (em_jogo) {
-			t = "*"
-		} else {
-			t = lista[i][2];
+			if (t != '-') {
+				t = "*";
+			}
 		}
 		n = lista[i][0];
 		if (n == nome) {
 			n = "<b>" + nome + "</b>";
+		}
+		if (t!="-") {
+			n = '<span style="color: red;">' + n + '</span>'
 		}
 		divs += '<div style="font-size:12;" title="' + t + '">'
 		//divs += ' <span style="float:left;">' + n + ':</span>'
