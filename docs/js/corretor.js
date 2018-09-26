@@ -624,5 +624,15 @@ function startTimerJogadores() {
 	timer_jogadores = setInterval(temporizador_jogadores, 60000);
 }
 
+function stopTimerJogadores() {
+	var r = confirm("Deseja interromper conexão?");
+	if (r == false) {
+		return;
+	}
+	if (timer_jogadores != null) {
+		clearInterval(timer_jogadores);
+		timer_jogadores = null;
+	}
+}
 
 
