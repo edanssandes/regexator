@@ -9,6 +9,7 @@ var peso = 0;
 
 var sala = '15ub9g';
 var sala_jogadores = {};
+var status_jogadores = {};
 
 var d = 0;
 var nome = "";
@@ -38,6 +39,7 @@ req.onreadystatechange = () => {
     console.log(req.responseText);
     if ("uri" in resp) {
       json_uri = resp["uri"];
+      check_sala();
     }
   }
 };
@@ -77,13 +79,13 @@ function calcular_pontos_acumulados(h) {
 	for (var key in h) {
 		pontos_acumulados += h[key]['pontos']*questoes[key]['peso'];
 	}
-	return pontos_acumulados;
+	return Math.round(pontos_acumulados);
 }
 
 
 function atualizar_pontos_acumulados() {
 	pontos_acumulados = calcular_pontos_acumulados(historicos);
-	document.getElementById('pt_total').textContent = Math.round(pontos_acumulados);
+	document.getElementById('pt_total').textContent = pontos_acumulados;
 }
 
 
@@ -378,9 +380,8 @@ function handler_sala() {
   if(this.status == 200) {
 	console.log("SALA", this.responseText);
 	resp = JSON.parse(this.responseText)
-	if (!(nome in resp)) {
+	if (!(nome in resp) || resp[nome] != json_uri) {
 		resp[nome] = json_uri;
-		sala_jogadores = resp;
 		s = JSON.stringify(resp);
 		console.log(s);
 		var sala_uri = 'https://api.myjson.com/bins/' + sala;
@@ -388,6 +389,7 @@ function handler_sala() {
 		req.setRequestHeader("Content-type", "application/json; charset=utf-8");
 		req.send(s);
 	}
+	sala_jogadores = resp;
   } else {
 	console.log(this.status);
   }
@@ -422,7 +424,6 @@ function check_cadastro() {
 		}
 		req.setRequestHeader("Content-type", "application/json; charset=utf-8");
 		req.send(s);
-		check_sala();
 	} catch(error) {
 		console.error(error);
 	}
@@ -491,6 +492,7 @@ function atualizar_status() {
 	}
 	div_peso = document.getElementById('peso');
 	div_peso.textContent = peso;
+	atualizar_div_jogadores();
 }
 
 function salvar_historico(pattern) {
@@ -556,12 +558,45 @@ function stopTimer() {
 }
 
 
+function atualizar_div_jogadores() {
+	divs = "";
+	lista = []
+	for (var key in status_jogadores) {
+		h = status_jogadores[key];
+		if (id_questao_atual in h) {
+			t = h[id_questao_atual]['pattern'];
+		} else {
+			t = '-';
+		}
+		lista.push([key, calcular_pontos_acumulados(h), t]);
+	}
+	lista.sort(function(a,b) {return b[1]-a[1];});
+	for (i=0; i<lista.length; i++) {
+		if (em_jogo) {
+			t = "*"
+		} else {
+			t = lista[i][2];
+		}
+		n = lista[i][0];
+		if (n == nome) {
+			n = "<b>" + nome + "</b>";
+		}
+		divs += '<div style="font-size:12;" title="' + t + '">'
+		//divs += ' <span style="float:left;">' + n + ':</span>'
+		divs += n;
+		divs += ' <span style="float:right;">' + lista[i][1] + '</span>'
+		divs += '</div>';
+	}
+	document.getElementById('jogadores').innerHTML = divs;
+}
+
 
 function handler_jogador() {
   if(this.status == 200) {
 	console.log("JOGADOR", this.responseText);
 	resp = JSON.parse(this.responseText)
-	jogador[resp['nome']] = resp['historico'];
+	status_jogadores[resp['nome']] = resp['historicos'];
+	atualizar_div_jogadores();
   } else {
 	console.log(this.status);
   }
@@ -569,19 +604,24 @@ function handler_jogador() {
 
 function temporizador_jogadores() {
 	console.log("TESTE");
-	var request = new XMLHttpRequest();
-	request.onload = handler_jogador;
+	check_sala();
 	for (var key in sala_jogadores) {
+		console.log(key);
 		if (key != nome) {
 			var jogador_uri = sala_jogadores[key];
+			console.log(key, jogador_uri);
+			request = new XMLHttpRequest();
+			request.onload = handler_jogador;
 			request.open('GET', jogador_uri);  // `false` makes the request synchronous
 			request.send();
+		} else {
+			status_jogadores[nome] = historicos;
 		}
 	}
 }
 
 function startTimerJogadores() {
-	timer_jogadores = setInterval(temporizador_jogadores, 10000);
+	timer_jogadores = setInterval(temporizador_jogadores, 60000);
 }
 
 
