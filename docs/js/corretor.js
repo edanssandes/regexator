@@ -332,7 +332,8 @@ function inicializar() {
 	//questoes = JSON.parse(questoes_json);
 	
 	nome = localStorage.getItem("oficina.regex.nome");
-	json_uri = localStorage.getItem("oficina.regex.json_uri");
+	//json_uri = localStorage.getItem("oficina.regex.json_uri");
+	console.log(json_uri);
 	historicos_json = localStorage.getItem("oficina.regex.historicos");
 	historicos = JSON.parse(historicos_json);	
 
