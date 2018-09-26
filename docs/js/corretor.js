@@ -40,7 +40,7 @@ function processar_expressao(expressao, texto) {
 		return null;
 	}
 	try {
-		var re = new RegExp(expressao, 'gu');
+		var re = new RegExp(expressao, 'gmu');
 		var pos = new Array();
 		while (match = re.exec(texto)) {
 			if (match.index === re.lastIndex) {
@@ -67,7 +67,7 @@ function atualizar_pontos_acumulados() {
 	for (var key in historicos) {
 		pontos_acumulados += historicos[key]['pontos']*questoes[key]['peso'];
 	}
-	document.getElementById('pt_total').textContent = Math.round(pontos_acumulados*10)/10;
+	document.getElementById('pt_total').textContent = Math.round(pontos_acumulados);
 }
 
 
