@@ -39,7 +39,7 @@ req.onreadystatechange = () => {
     console.log(req.responseText);
     if ("uri" in resp) {
       json_uri = resp["uri"];
-      check_sala();
+      //check_sala(); //Offline
     }
   }
 };
@@ -367,8 +367,8 @@ function inicializar() {
 		select.options[i+1] = new Option('Questão ' + (i+1), i);
 	}
 
-	check_cadastro();
-	startTimerJogadores();
+	//check_cadastro(); // Offline
+	//startTimerJogadores(); // Offline
 
 	stopTimer();
 	atualizar_pontos_acumulados();
@@ -376,7 +376,7 @@ function inicializar() {
 	//document.documentElement.requestFullscreen();
 }
 
-function handler_sala() {
+function handler_sala() { //Offline
   if(this.status == 200) {
 	console.log("SALA", this.responseText);
 	resp = JSON.parse(this.responseText)
@@ -397,7 +397,7 @@ function handler_sala() {
   }
 }
 
-function check_sala() {
+function check_sala() { //Offline
 	if (json_uri == null || json_uri == "") {
 		return;
 	}
@@ -412,7 +412,7 @@ function check_sala() {
 	}
 }
 
-function check_cadastro() {
+function check_cadastro() { //Offline
 	try {
 		//obj = {'nome': nome, 'json_uri': json_uri, "historicos": historicos};
 		obj = {'nome': nome, "historicos": historicos};
@@ -506,7 +506,7 @@ function salvar_historico(pattern) {
 	}
 	localStorage.setItem("oficina.regex.historicos", JSON.stringify(historicos));
 	//localStorage.setItem("oficina.regex.json_uri", json_uri);
-	check_cadastro();
+	//check_cadastro(); // Offline
 	atualizar_pontos_acumulados();
 }
 
@@ -515,7 +515,7 @@ function temporizador() {
 
 	if (!time_started) {
 		time_started = true;
-		audio_start.play();
+		//audio_start.play(); // Silent
 	}
 
 	d = (new Date()).getTime()
@@ -593,7 +593,7 @@ function atualizar_div_jogadores() {
 		divs += ' <span style="float:right;">' + lista[i][1] + '</span>'
 		divs += '</div>';
 	}
-	document.getElementById('jogadores').innerHTML = divs;
+	//document.getElementById('jogadores').innerHTML = divs; // Offline
 }
 
 
@@ -610,7 +610,7 @@ function handler_jogador() {
 
 function temporizador_jogadores() {
 	console.log("TESTE");
-	check_sala();
+	//check_sala(); // Offline
 	for (var key in sala_jogadores) {
 		console.log(key);
 		if (key != nome) {
@@ -626,7 +626,7 @@ function temporizador_jogadores() {
 	}
 }
 
-function startTimerJogadores() {
+function startTimerJogadores() { // Offline
 	timer_jogadores = setInterval(temporizador_jogadores, 60000);
 }
 
